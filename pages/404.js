@@ -1,3 +1,14 @@
+import { Button } from "semantic-ui-react";
+
+import { useRouter } from "next/router";
+
 export default function Error404() {
-  return <div>404 Errrrrrrrrrrorr</div>;
+  const router = useRouter();
+
+  return (
+    <div>
+      <div>404 Error</div>
+      <button onClick={() => router.push("/")}>Back to Home</button>
+    </div>
+  );
 }

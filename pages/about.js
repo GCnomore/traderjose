@@ -1,3 +1,3 @@
 export default function About() {
-  return <></>;
+  return <>This is all 서이사 part</>;
 }

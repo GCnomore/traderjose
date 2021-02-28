@@ -5,7 +5,7 @@ import axios from "axios";
 import Item from "../src/component/Item";
 import Head from "next/head";
 
-export default function Post({ item }) {
+export default function Post({ item, name }) {
   return (
     <>
       {item && (

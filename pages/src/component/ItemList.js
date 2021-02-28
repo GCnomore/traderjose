@@ -1,53 +1,52 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { Grid, Image, Divider, Header, Loader } from "semantic-ui-react";
 import Link from "next/link";
 
-export default function ItemList() {
-  const [list, setList] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+import styled from "styled-components";
+import { normalModeTheme } from "../../../styles/theme";
+import { useEffect, useState } from "react";
+import { Image, Divider, Header } from "semantic-ui-react";
 
-  const API_URL =
-    "http://makeup-api.herokuapp.com/api/v1/products.json?brand=maybelline";
-
-  const getData = () => {
-    axios.get(API_URL).then((res) => {
-      setList(res.data);
-      setIsLoading(false);
-    });
-  };
-
-  useEffect(() => {
-    getData();
-  }, []);
+export default function ItemList({ data }) {
+  const [list, setList] = useState(data);
 
   return (
     <>
-      {isLoading ? (
-        <Loader active>Loading</Loader>
-      ) : (
-        <>
-          <Header>Hwa Jang Poom</Header>
-          <Divider />
-          <Grid columns={3} divided>
-            <Grid.Row>
-              {list &&
-                list.map((item) => (
-                  <Grid.Column key={item.id}>
-                    <Link href={`/view/${item.id}`}>
-                      <a>
-                        <Image src={item.image_link} />
-                        <strong>{item.brand}</strong>
-                        <p>{item.name}</p>
-                        <strong>${item.price}</strong>
-                      </a>
-                    </Link>
-                  </Grid.Column>
-                ))}
-            </Grid.Row>
-          </Grid>
-        </>
-      )}
+      <Header>Hwa Jang Poom</Header>
+      <Divider />
+      <ItemListContainer>
+        {list &&
+          list.map((data) => (
+            <Link key={data.id} href={`/detail/${data.id}`}>
+              <Items key={data.id}>
+                <Image src={data.image_link} />
+                <strong>{data.brand}</strong>
+                <p>{data.name}</p>
+                <strong>${data.price}</strong>
+              </Items>
+            </Link>
+          ))}
+      </ItemListContainer>
     </>
   );
 }
+
+const ItemListContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  margin: 0 20%;
+  grid-gap: 0.5rem;
+`;
+
+const Items = styled.div`
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  border: 0.1px solid ${normalModeTheme.mainThemeColor};
+  border-radius: 0.5rem;
+  :hover {
+    cursor: pointer;
+  }
+  > img {
+    width: 10rem;
+    align-self: center;
+  }
+`;
