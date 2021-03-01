@@ -1,20 +1,19 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { render } from "react-dom";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { Menu, Input, Modal, Button } from "semantic-ui-react";
 import styled from "styled-components";
 import { normalModeTheme } from "../../../styles/theme";
-import { loadGetInitialProps } from "next/dist/next-server/lib/utils";
+import axios from "axios";
 
 export default function Header() {
-  const [currentLocation, setLocation] = useState({ activeItem: "home" });
+  const [location, setLocation] = useState("");
   const [open, setOpen] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
-  const { activeItem } = currentLocation;
+  const [locationMenu, setLocationMenu] = useState(false);
   const router = useRouter();
 
   const category = [
@@ -46,10 +45,15 @@ export default function Header() {
     { name: "Video games", url: "videogames" },
   ];
 
-  const handleItemClick = (e, { name }) => {
-    setLocation({ activeItem: name });
-    router.push(`${name === "home" ? "/" : `/${name}`}`);
-  };
+  useEffect(() => {
+    document.addEventListener("click", (e) => {
+      if (e.target.id !== "locationInput" && e.target.id !== "currenLocation") {
+        if (locationMenu) {
+          setLocationMenu(false);
+        }
+      }
+    });
+  }, []);
 
   const renderCategory = () => {
     return (
@@ -63,7 +67,7 @@ export default function Header() {
           <h1>Category</h1>
           <div>
             {category.map((item) => (
-              <a>{item.name}</a>
+              <a key={item.name}>{item.name}</a>
             ))}
           </div>
         </CategoryModal>
@@ -71,18 +75,59 @@ export default function Header() {
     );
   };
 
+  const getCurrentLocation = async () => {
+    const API_KEY = process.env.GEOCODE_KEY;
+    navigator.geolocation.getCurrentPosition(success, handleError);
+    function handleError() {
+      console.log("erro");
+    }
+    async function success(position) {
+      const latlng = `${position.coords.latitude},${position.coords.longitude}`;
+      const res = await axios.get(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latlng}&key=${API_KEY}`
+      );
+      setLocation(res.data.results[6].formatted_address);
+      console.log(res.data.results[6].formatted_address);
+    }
+  };
+
   return (
     <>
+      <MenuWrapper>
+        <Link href={"/"}>Home</Link>
+        <Link href={"/about"}>About</Link>
+      </MenuWrapper>
       <AppName>NAME OF THE APP</AppName>
       <HeaderContainer>
-        <MenuWrapper>
-          <Link href={"/"}>Home</Link>
-          <Link href={"/about"}>About</Link>
-          {renderCategory()}
-        </MenuWrapper>
+        <div style={{ width: "100%" }}></div>
         <SearchWrapper>
-          <input placeholder="Search"></input>
-          <input placeholder="Location"></input>
+          <div>
+            <SearchItemWrapper>
+              <input placeholder="Search"></input>
+            </SearchItemWrapper>
+            <LocationWrapper>
+              <input
+                id="locationInput"
+                onFocus={() => setLocationMenu(true)}
+                value={location && location}
+                onChange={(e) => setLocationMenu(e.target.value)}
+                placeholder="Location"
+              ></input>
+              {locationMenu && (
+                <div>
+                  <div
+                    onClick={() => getCurrentLocation()}
+                    style={{ width: "100%" }}
+                    id="currenLocation"
+                  >
+                    Current Location
+                  </div>
+                </div>
+              )}
+            </LocationWrapper>
+          </div>
+          <SearchButton>Search</SearchButton>
+          {renderCategory()}
         </SearchWrapper>
 
         <AccountWrapper>
@@ -119,19 +164,33 @@ const HeaderContainer = styled.div`
 `;
 
 const MenuWrapper = styled.div`
+  background-color: ${normalModeTheme.mainThemeColor};
   width: 100%;
   > a {
+    color: white;
     margin: 0rem 1rem;
+    text-decoration: none;
   }
 `;
 
 const SearchWrapper = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  text-align: center;
   width: 100%;
-  > input {
+  > div {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+  > div > div > input {
     height: 2rem;
-    margin: 0 1rem;
+    width: 100%;
+  }
+  > button {
+    width: 10rem;
+    align-self: center;
   }
 `;
 
@@ -165,4 +224,32 @@ const AccountWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
   width: 100%;
+`;
+
+const SearchButton = styled.button`
+  height: 2rem;
+  background-color: yellow;
+  outline: none;
+  border: none;
+  :hover {
+    cursor: grabbing;
+  }
+`;
+
+const SearchItemWrapper = styled.div`
+  width: 100%;
+`;
+
+const LocationWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  > div {
+    display: flex;
+    justify-content: flex-start;
+    background-color: white;
+    padding: 0.5rem 0;
+    color: black;
+    border: 1px solid gray;
+  }
 `;
