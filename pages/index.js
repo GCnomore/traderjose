@@ -8,6 +8,10 @@ export default function Home({ data }) {
       <Head>
         <title>Home | TraderJose</title>
         <meta name="description" content="This is Next JS" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+        />
       </Head>
       <ItemList data={data} />
     </div>
