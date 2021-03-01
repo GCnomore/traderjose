@@ -1,8 +1,6 @@
 import styled from "styled-components";
 import { normalModeTheme } from "../../../styles/theme";
 
-import bgImg from "../../../public/assets/bgImg10.jpg";
-
 export default function Item({ item }) {
   if (item) {
     return (
@@ -47,8 +45,6 @@ const Items = styled.div`
   height: 100%;
   width: 100%;
   color: rgb(0, 175, 29);
-  background-image: url(${bgImg});
-  background-position: center;
 `;
 
 const ItemContainer = styled.div`
