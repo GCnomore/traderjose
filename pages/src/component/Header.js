@@ -79,7 +79,7 @@ export default function Header() {
     const API_KEY = process.env.GEOCODE_KEY;
     navigator.geolocation.getCurrentPosition(success, handleError);
     function handleError() {
-      console.log("erro");
+      console.log("error");
     }
     async function success(position) {
       const latlng = `${position.coords.latitude},${position.coords.longitude}`;
@@ -87,7 +87,7 @@ export default function Header() {
         `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latlng}&key=${API_KEY}`
       );
       setLocation(res.data.results[6].formatted_address);
-      console.log(res.data.results[6].formatted_address);
+      console.log(res.data);
     }
   };
 
