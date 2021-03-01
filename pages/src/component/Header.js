@@ -86,8 +86,8 @@ export default function Header() {
       const res = await axios.get(
         `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latlng}&key=${API_KEY}`
       );
-      setLocation(res.data.results[6].formatted_address);
       console.log(res.data);
+      setLocation(res.data.results[6].formatted_address);
     }
   };
 
