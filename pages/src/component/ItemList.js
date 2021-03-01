@@ -10,8 +10,6 @@ export default function ItemList({ data }) {
 
   return (
     <>
-      <Header>Hwa Jang Poom</Header>
-      <Divider />
       <ItemListContainer>
         {list &&
           list.map((data) => (
@@ -32,7 +30,7 @@ export default function ItemList({ data }) {
 const ItemListContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-  margin: 0 20%;
+  margin: 5% 20%;
   grid-gap: 0.5rem;
 `;
 

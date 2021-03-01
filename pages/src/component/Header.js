@@ -1,15 +1,19 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { render } from "react-dom";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { Menu, Input, Modal, Button } from "semantic-ui-react";
 import styled from "styled-components";
 import { normalModeTheme } from "../../../styles/theme";
+import { loadGetInitialProps } from "next/dist/next-server/lib/utils";
 
 export default function Header() {
   const [currentLocation, setLocation] = useState({ activeItem: "home" });
   const [open, setOpen] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
   const { activeItem } = currentLocation;
   const router = useRouter();
 
@@ -53,7 +57,7 @@ export default function Header() {
         onClose={() => setOpen(false)}
         onOpen={() => setOpen(true)}
         open={open}
-        trigger={<Button>Show Modal</Button>}
+        trigger={<CategoryButton>Category</CategoryButton>}
       >
         <CategoryModal>
           <h1>Category</h1>
@@ -74,18 +78,28 @@ export default function Header() {
         <MenuWrapper>
           <Link href={"/"}>Home</Link>
           <Link href={"/about"}>About</Link>
-          <Link href={"/"}>Home</Link>
+          {renderCategory()}
         </MenuWrapper>
         <SearchWrapper>
           <input placeholder="Search"></input>
           <input placeholder="Location"></input>
         </SearchWrapper>
-        <AuthWrapper>
-          <Link href={"/login"}>Log In</Link>
-          <Link href={"/register"}>Sign Up</Link>
-        </AuthWrapper>
+
+        <AccountWrapper>
+          <FontAwesomeIcon
+            onClick={() => {
+              setShowAuth(!showAuth);
+            }}
+            width="3rem"
+            icon={faUserCircle}
+          />
+
+          <AuthWrapper show={showAuth}>
+            <Link href={"/login"}>Log In</Link>
+            <Link href={"/register"}>Sign Up</Link>
+          </AuthWrapper>
+        </AccountWrapper>
       </HeaderContainer>
-      {renderCategory()}
     </>
   );
 }
@@ -105,14 +119,31 @@ const HeaderContainer = styled.div`
 `;
 
 const MenuWrapper = styled.div`
+  width: 100%;
   > a {
     margin: 0rem 1rem;
   }
 `;
 
-const SearchWrapper = styled.div``;
+const SearchWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  > input {
+    height: 2rem;
+    margin: 0 1rem;
+  }
+`;
 
 const AuthWrapper = styled.div`
+  width: 100%;
+  display: ${(props) => (props.show ? "flex" : "none")};
+  flex-direction: column;
+  position: absolute;
+  right: 2%;
+  top: 15%;
+  height: 5rem;
+  border: 1px solid ${normalModeTheme.mainThemeColor};
   > a {
     margin: 0rem 1rem;
   }
@@ -121,7 +152,17 @@ const AuthWrapper = styled.div`
 const CategoryModal = styled.div`
   text-align: center;
   > div {
+    margin: 3rem 1rem;
+    font-size: 1.2rem;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 2rem;
   }
+`;
+
+const CategoryButton = styled.button``;
+const AccountWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
 `;
